@@ -58,6 +58,9 @@ def create_backup(source_dir=None, backup_attachments=False, backup_tts_cache=Fa
                 
                 print(f"正在备份 {subdir}...")
                 for root, dirs, files in os.walk(subdir_path):
+                    # 跳过桌宠资源目录，避免打包体积较大的 Live2D 文件
+                    dirs[:] = [directory for directory in dirs if directory.casefold() != "deskpet"]
+
                     # 处理附件排除逻辑
                     if not backup_attachments and "attachments" in root:
                         # 如果不备份附件，且当前路径包含 attachments，则跳过该目录下的文件
@@ -76,6 +79,8 @@ def create_backup(source_dir=None, backup_attachments=False, backup_tts_cache=Fa
             if os.path.exists(dist_server_dir):
                 print(f"正在备份 {dist_server_dir} 中的配置文件（含子目录）...")
                 for root, dirs, files in os.walk(dist_server_dir):
+                    # 分布式服务配置备份也排除桌宠资源目录
+                    dirs[:] = [directory for directory in dirs if directory.casefold() != "deskpet"]
                     for file in files:
                         if file.endswith(".env") or file.endswith(".json"):
                             file_path = os.path.join(root, file)
